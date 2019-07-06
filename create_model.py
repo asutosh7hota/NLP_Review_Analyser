@@ -59,7 +59,7 @@ tv = TfidfVectorizer(stop_words ='english',ngram_range=(1,3),max_features=10000)
 x_tv= tv.fit_transform(x)
 
 #Create tfidf pickle and save
-pickle.dump(model, open('finalized_model_tfidf.sav', 'wb'))
+pickle.dump(tv, open('finalized_model_tfidf.sav', 'wb'))
 
 features = tv.get_feature_names()
 print('Features exist:',features[100:120])
@@ -74,6 +74,6 @@ xg_clf.fit(x_train_tv, y_train_tv)
 
 y_pred=xg_clf.predict(x_test_tv)
 
-pickle.dump(model, open('finalized_model_XGB.sav', 'wb'))
+pickle.dump(xg_clf, open('finalized_model_XGB.sav', 'wb'))
 
 print('Model trained properly and saved')
