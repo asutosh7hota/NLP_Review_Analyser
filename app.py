@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, flash, jsonify
+from flask import Flask, request, redirect, url_for, flash, jsonify, render_template
 import json
 import base64
 import io
@@ -9,9 +9,28 @@ import pandas as pd
 from keras import backend as K
 import tensorflow as tf
 import pandas as pd
+from flask import Flask, render_template,request,url_for
+from flask_bootstrap import Bootstrap 
+import random 
+import time
 
+'''
+vector = tfidf.transform(pd.Series(data))
+my_prediction = classifier.predict(vector)
+
+if my_prediction[0] == 0:
+    print('Negetive')
+    a = 0
+else:
+    print('Positive')
+    a = 1
+
+
+'''
 
 app = Flask(__name__)
+Bootstrap(app)
+
 
 @app.before_first_request
 def load_models():
@@ -23,36 +42,36 @@ def load_models():
     print('Models Loaded')
 
 
-    
-
-@app.route('/query-by-text/', methods=['POST'])
-def make():
-
-
-    data = request.get_json()
-    print('Data Loaded, Type:', type(data))
-
-    test = tfidf.transform(pd.Series(data))
-    print(test)
-    predict = classifier.predict(test)
-    print('Type:',type(predict))
-    print('This is the response:', predict[0])
-
-    if predict[0] == 0:
-        print('Negetive')
-        a = 'Negetive'
-    else:
-        print('Positive')
-        a = 'Positive'
+@app.route('/')
+def index():
+	return render_template('index.html')
 
 
-    
-    # Return index of the closest image.
+@app.route('/analyse',methods=['POST'])
+def analyse():
+    start = time.time()
+    if request.method == 'POST':
+        rawtext = request.form['rawtext']
+        #NLP Stuff
+        vector = tfidf.transform(pd.Series(rawtext))
+        my_prediction = classifier.predict(vector)
 
-    return jsonify(a)
+        if my_prediction[0] == 0:
+            print('Negetive')
+            b = 'Negetive'
+            a = 0
+        else:
+            print('Positive')
+            b = 'Positive'
+            a = 1
+    end = time.time()
+    final_time = end -start
+    return render_template('index.html',number_of_tokens = b)
+
+
+
 
 
 
 if __name__ == '__main__':
-    # The port number MUST match the one specified in `routes.js`.
-    app.run(debug=True, host='0.0.0.0', port=50001)
+	app.run(debug=True)
