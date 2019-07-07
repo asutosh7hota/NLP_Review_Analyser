@@ -34,14 +34,38 @@
 
 <div class="container">
   <div class="jumbotron text-center">
-    <h3>Natural Language Processing App</h3>
+    <h3>Review Classifier</h3>
   </div>
 </div>
 
 <div class="container">
   <form method="POST" action="{{ url_for('analyse') }}" id="myForm">
     <label>Enter Your Text Below</label>
-    <textarea class="form-control" rows="3" cols="2" name="rawtext"></textarea>
+    <textarea
+      class="form-control"
+      id="myTextarea"
+      rows="3"
+      cols="2"
+      name="rawtext"
+    ></textarea>
+    <br />
+    <p>Or</p>
+    <select name="dropdown" onchange="changeText(this.value)">
+      <option selected>Choose a demo text</option>
+      <option value="This is a good book, strongly recommended."
+        >Review 1</option
+      >
+      <option value="This is a very bad item">Review 2</option>
+      <!-- Add demo text in the value field -->
+      <option value="Discrete Mathematics">Review 3</option>
+      <option value="Discrete Mathematics">Review 4</option>
+      <option value="Discrete Mathematics">Review 5</option>
+      <option value="Discrete Mathematics">Review 6</option>
+      <option value="Discrete Mathematics">Review 7</option>
+      <option value="Discrete Mathematics">Review 8</option>
+      <option value="Discrete Mathematics">Review 9</option>
+      <option value="Discrete Mathematics">Review 10</option>
+    </select>
 
     <input
       type="submit"
@@ -91,6 +115,10 @@
       }
     </script>
     <script>
+      function changeText(text) {
+        document.getElementById("myTextarea").value = text;
+      }
+
       function myAnalyser() {
         document.querySelector(".main div").style.display = "none";
         //Hide the main division
