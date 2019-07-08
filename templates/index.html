@@ -34,6 +34,11 @@
 
 <div class="container">
   <div class="jumbotron text-center">
+    <img
+      src="https://res.cloudinary.com/winterfellws/image/upload/v1562623188/save_aywqce.png"
+      alt="Italian Trulli"
+    />
+
     <h3>Review Classifier</h3>
   </div>
 </div>
@@ -52,19 +57,23 @@
     <p>Or</p>
     <select name="dropdown" onchange="changeText(this.value)">
       <option selected>Choose a demo text</option>
-      <option value="This is a good book, strongly recommended."
+      <option
+        value="After using everything seems to be right, but it's completely reliable."
         >Review 1</option
       >
-      <option value="This is a very bad item">Review 2</option>
+      <option
+        value="After buying this product I am literally not listening to my heart ever again."
+        >Review 2</option
+      >
       <!-- Add demo text in the value field -->
-      <option value="Discrete Mathematics">Review 3</option>
-      <option value="Discrete Mathematics">Review 4</option>
-      <option value="Discrete Mathematics">Review 5</option>
-      <option value="Discrete Mathematics">Review 6</option>
-      <option value="Discrete Mathematics">Review 7</option>
-      <option value="Discrete Mathematics">Review 8</option>
-      <option value="Discrete Mathematics">Review 9</option>
-      <option value="Discrete Mathematics">Review 10</option>
+      <option
+        value="After selling my old mobile i think  got the right product.Its worthy."
+        >Review 3</option
+      >
+      <option
+        value="Amazon customer care is extremely disgusting and inferior, always harms the customer and damages financially in many ways."
+        >Review 4</option
+      >
     </select>
 
     <input
@@ -77,7 +86,13 @@
       type="button"
       onclick="myFunction()"
       value="Clear"
-      class="btn btn-outline-dark"
+      class="btn btn-primary"
+    />
+    <input
+      type="button"
+      onclick="playAudio()"
+      value="Play Sound"
+      class="btn btn-primary"
     />
 
     <a href="{{ url_for('index') }}" type="button" class="btn btn-danger">
@@ -91,13 +106,11 @@
   <div class="container">
     <div class="card">
       <div class="card-header">
-        Main Points
+        Results
       </div>
       <div class="card-body">
         <h5 class="card-title">
-          <div class="alert alert-primary" role="alert">
-            This entered review is {{ number_of_tokens }}.
-          </div>
+          <div class="alert alert-primary" id="printresult" role="alert"></div>
         </h5>
       </div>
     </div>
@@ -110,42 +123,105 @@
     {{ super() }}
 
     <script>
+      var div = document.getElementById("printresult");
+
+      var pos = {{pos}};
+      var neg = {{neg}};
+
+      if (pos > neg) {
+        div.innerHTML += 'This is a <span style=\"color:green\">Positive</span> review with ' + pos + '%';
+      } else {
+        div.innerHTML += 'This is a <span style=\"color:red\">Negetive</span> review with ' + neg + '%';
+      }
+
       function myFunction() {
         document.getElementById("myForm").reset();
       }
     </script>
     <script>
+      var list = new Array();
+
       function changeText(text) {
+        console.log("This works", document.getElementById("myTextarea").value);
         document.getElementById("myTextarea").value = text;
+        list.push(text);
+        console.log(list.length);
+      }
+      // var textbox1 = document.getElementById("myTextarea").value;
+      // console.log(textbox1);
+
+      function playSound(url) {
+        var a = new Audio(url);
+        a.play();
+      }
+
+      function playAudio() {
+        var textbox = document.getElementById("myTextarea").value;
+        //var textbox = text;
+        if (
+          textbox ===
+          "After using everything seems to be right, but it's completely reliable."
+        ) {
+          // var audio = document.createElement("audio");
+          // audio.setAttribute("src", "./1.aac");
+          // audio.load;
+          // audio.play();
+          url =
+            "https://res.cloudinary.com/winterfellws/video/upload/v1562622816/1_kd7oga.3gp";
+          playSound(url);
+        } else if (
+          textbox ===
+          "After buying this product I am literally not listening to my heart ever again."
+        ) {
+          url =
+            "https://res.cloudinary.com/winterfellws/video/upload/v1562622816/2_s7pm11.3gp";
+          playSound(url);
+        } else if (
+          textbox ===
+          "After selling my old mobile i think  got the right product.Its worthy."
+        ) {
+          url =
+            "https://res.cloudinary.com/winterfellws/video/upload/v1562622816/3_oxwklj.3gp";
+          playSound(url);
+        } else if (
+          textbox ===
+          "Amazon customer care is extremely disgusting and inferior, always harms the customer and damages financially in many ways."
+        ) {
+          url =
+            "https://res.cloudinary.com/winterfellws/video/upload/v1562622816/4_m3vdg2.3gp";
+          playSound(url);
+        } else {
+          console.log("No play found");
+        }
       }
 
       function myAnalyser() {
         // add code for voice
 
-        // get all voices that browser offers
-        var available_voices = window.speechSynthesis.getVoices();
+        // // get all voices that browser offers
+        // var available_voices = window.speechSynthesis.getVoices();
 
-        // this will hold an english voice
-        var english_voice = "";
+        // // this will hold an english voice
+        // var english_voice = "";
 
-        // find voice by language locale "en-US"
-        // if not then select the first voice
-        for (var i = 0; i < available_voices.length; i++) {
-          if (available_voices[i].lang === "en-US") {
-            english_voice = available_voices[i];
-            break;
-          }
-        }
-        if (english_voice === "") english_voice = available_voices[0];
+        // // find voice by language locale "en-US"
+        // // if not then select the first voice
+        // for (var i = 0; i < available_voices.length; i++) {
+        //   if (available_voices[i].lang === "en-US") {
+        //     english_voice = available_voices[i];
+        //     break;
+        //   }
+        // }
+        // if (english_voice === "") english_voice = available_voices[0];
 
-        // new SpeechSynthesisUtterance object
-        var utter = new SpeechSynthesisUtterance();
-        utter.rate = 1;
-        utter.pitch = 0.5;
-        utter.text = document.getElementById("myTextarea").value;
-        utter.voice = english_voice;
-        // speak
-        window.speechSynthesis.speak(utter);
+        // // new SpeechSynthesisUtterance object
+        // var utter = new SpeechSynthesisUtterance();
+        // utter.rate = 1;
+        // utter.pitch = 0.5;
+        // utter.text = document.getElementById("myTextarea").value;
+        // utter.voice = english_voice;
+        // // speak
+        // window.speechSynthesis.speak(utter);
 
         document.querySelector(".main div").style.display = "none";
         //Hide the main division

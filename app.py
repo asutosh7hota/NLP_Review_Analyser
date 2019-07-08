@@ -5,14 +5,25 @@ import io
 from PIL import Image
 import numpy as np
 import pickle
-import pandas as pd
 from keras import backend as K
 import tensorflow as tf
-import pandas as pd
 from flask import Flask, render_template,request,url_for
 from flask_bootstrap import Bootstrap 
 import random 
 import time
+
+import re
+from sklearn.utils import shuffle
+import numpy as np
+import bz2
+from keras.layers import *
+from keras.models import Model
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score
+import os
+
 
 '''
 vector = tfidf.transform(pd.Series(data))
@@ -35,12 +46,17 @@ Bootstrap(app)
 @app.before_first_request
 def load_models():
     #Load TSV file for image_ids
-    global tfidf, classifier
+    global token, classifier,graph
     print('Models Initiated')
-    tfidf = pickle.load(open('./data/finalized_model_tfidf.sav', 'rb'))
-    classifier = pickle.load(open('./data/finalized_model_XGB.sav', 'rb'))
+    token = pickle.load(open('tokenizer.pickle', 'rb'))
+    classifier = pickle.load(open('SentimentAnalysisModel.pickle', 'rb'))
+    global graph
+    graph = tf.get_default_graph()
     print('Models Loaded')
 
+@app.route('/music/1.aac')  
+def send_file(filename):  
+    return send_from_directory("/music", '1.aac')
 
 @app.route('/')
 def index():
@@ -53,20 +69,25 @@ def analyse():
     if request.method == 'POST':
         rawtext = request.form['rawtext']
         #NLP Stuff
-        vector = tfidf.transform(pd.Series(rawtext))
-        my_prediction = classifier.predict(vector)
-
-        if my_prediction[0] == 0:
-            print('Negetive')
-            b = 'Negetive'
-            a = 0
-        else:
-            print('Positive')
-            b = 'Positive'
-            a = 1
+        
+        with graph.as_default():
+            y=token.texts_to_sequences([rawtext])
+            y1 = pad_sequences(y, maxlen=128, padding='post')
+            print('This is the padded sequence:',y1)
+            print('Type:',type(y1))
+            my_prediction=classifier.predict(y1)
+            print('This is the prediction',my_prediction)
+            if my_prediction[0][0] < my_prediction[0][1]:
+                print('Positive')
+                b = 'Positive'
+                
+            else:
+                print('Negative')
+                b = 'Negative'
+                
     end = time.time()
-    final_time = end -start
-    return render_template('index.html',number_of_tokens = b)
+    #final_time = end -start
+    return render_template('index.html',number_of_tokens = b, neg= round(my_prediction[0][0],3), pos=round(my_prediction[0][1],3))
 
 
 
