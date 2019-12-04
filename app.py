@@ -1,8 +1,4 @@
 from flask import Flask, request, redirect, url_for, flash, jsonify, render_template
-import json
-import base64
-import io
-from PIL import Image
 import numpy as np
 import pickle
 from keras import backend as K
@@ -11,18 +7,14 @@ from flask import Flask, render_template,request,url_for
 from flask_bootstrap import Bootstrap 
 import random 
 import time
-
-import re
 from sklearn.utils import shuffle
 import numpy as np
-import bz2
 from keras.layers import *
 from keras.models import Model
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from sklearn.metrics import f1_score
 from sklearn.metrics import accuracy_score
-import os
 
 
 '''
